@@ -40,11 +40,6 @@ typedef multimap<long long,long long> mmap;
 #define fori(i,s,n) for(int i=(s);i<(n);++i)
 #define forl(i,s,n) for(ll i=(s);i<(n);++i)
 
-
-
-
-
-
 class Graph{
     private:
         int V;
@@ -58,49 +53,11 @@ class Graph{
             }
             adjNodes=temp;
         } 
-        vi prims(){
-            priority_queue<pii,vector<pii>,greater<pii> > pq;
-            int src=0;
-            vector<int> key(V,INT_MAX);
-            vector<int> parent(V,-1);
-            vector<bool> inMST(V, false); 
-            pq.push(make_pair(0, src)); 
-            key[src] = 0; 
-             while (!pq.empty()) 
-            {  
-                int u = pq.top().second; 
-                pq.pop(); 
-                inMST[u] = true; 
-                vector<pii> li=adjNodes[u];
-                for(int i=0;i<li.size();++i){
-                    int v=li[i].first;
-                    int w=li[i].second;
-                    if(!inMST[v] && key[v]>w){
-                        key[v]=w;
-                        parent[v]=u;
-                        pq.push(make_pair(key[v],v));
-                        
-                    }
-                }
-            }
-            return parent;
-            
-        }
+       
 
 };
 
 
-void printVector(vector<int> &index){
-    int n=index.size();
-    fori(i,0,n){
-        cout<<index[i]<<" ";
-    }
-    cout<<endl;
-
-}
-
-/*Prims gives us the minimum spanning tree
-not the shortest distance from source*/
 
 int main(){
     ios_base::sync_with_stdio(false); //makes cin cout faster
@@ -114,12 +71,10 @@ int main(){
         vi temp(3);
         cin>>temp[0]; //u
         cin>>temp[1];//v
-        cin>>temp[2];
+        cin>>temp[2];//weight
         edges.push_back(temp);
     }
     Graph g(v,edges);
-    vector<int> distance=g.prims();
-    printVector(distance);
     return 0;
 
 }

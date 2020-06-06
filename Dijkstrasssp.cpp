@@ -40,55 +40,48 @@ typedef multimap<long long,long long> mmap;
 #define fori(i,s,n) for(int i=(s);i<(n);++i)
 #define forl(i,s,n) for(ll i=(s);i<(n);++i)
 
-
-
-
-
-
 class Graph{
     private:
         int V;
-        vector<vector<pii>> adjNodes;
+        vector<vpi> adjNodes;
     public:
         Graph(int v,vvi& edgeList){
             V=v;
-            vector<vector<pii>> temp(V);
+            vector<vpi> temp(V);
             for(int i=0;i<edgeList.size();++i){
                 temp[edgeList[i][0]].push_back(make_pair(edgeList[i][1],edgeList[i][2]));//edge from 1th index to 0th index
             }
             adjNodes=temp;
         } 
-        vi prims(){
-            priority_queue<pii,vector<pii>,greater<pii> > pq;
+        vector<int> dijkstra(){
             int src=0;
-            vector<int> key(V,INT_MAX);
-            vector<int> parent(V,-1);
-            vector<bool> inMST(V, false); 
-            pq.push(make_pair(0, src)); 
-            key[src] = 0; 
-             while (!pq.empty()) 
-            {  
-                int u = pq.top().second; 
-                pq.pop(); 
-                inMST[u] = true; 
+            vector<int> dist(V,INT_MAX);
+            vector<bool> inSP(V, 0);  
+            set<pii> edges;
+            edges.insert(make_pair(0,src));
+            dist[src]=0;
+            while(!edges.empty()){
+                pii temp=*(edges.begin());
+                edges.erase(edges.begin());
+                int u=temp.second;
                 vector<pii> li=adjNodes[u];
                 for(int i=0;i<li.size();++i){
                     int v=li[i].first;
                     int w=li[i].second;
-                    if(!inMST[v] && key[v]>w){
-                        key[v]=w;
-                        parent[v]=u;
-                        pq.push(make_pair(key[v],v));
-                        
+                    if(dist[u]!=INT_MAX && dist[v]>dist[u]+w){
+                        if(!dist[v]==INT_MAX ){
+                            edges.erase(edges.find(make_pair(dist[v],v)));
+                        }
+                        dist[v]=dist[u]+w;
+                        edges.insert(make_pair(dist[v],v));
                     }
                 }
             }
-            return parent;
-            
+            return dist;
         }
+       
 
 };
-
 
 void printVector(vector<int> &index){
     int n=index.size();
@@ -98,9 +91,6 @@ void printVector(vector<int> &index){
     cout<<endl;
 
 }
-
-/*Prims gives us the minimum spanning tree
-not the shortest distance from source*/
 
 int main(){
     ios_base::sync_with_stdio(false); //makes cin cout faster
@@ -114,12 +104,12 @@ int main(){
         vi temp(3);
         cin>>temp[0]; //u
         cin>>temp[1];//v
-        cin>>temp[2];
+        cin>>temp[2];//weight
         edges.push_back(temp);
     }
     Graph g(v,edges);
-    vector<int> distance=g.prims();
-    printVector(distance);
+    vi dist=g.dijkstra();
+    printVector(dist);
     return 0;
 
 }

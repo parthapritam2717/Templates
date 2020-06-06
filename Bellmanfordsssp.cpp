@@ -40,55 +40,46 @@ typedef multimap<long long,long long> mmap;
 #define fori(i,s,n) for(int i=(s);i<(n);++i)
 #define forl(i,s,n) for(ll i=(s);i<(n);++i)
 
-
-
-
-
-
 class Graph{
     private:
         int V;
-        vector<vector<pii>> adjNodes;
+        vvi edges;//for bellman form we store array of edges
     public:
         Graph(int v,vvi& edgeList){
             V=v;
-            vector<vector<pii>> temp(V);
-            for(int i=0;i<edgeList.size();++i){
-                temp[edgeList[i][0]].push_back(make_pair(edgeList[i][1],edgeList[i][2]));//edge from 1th index to 0th index
-            }
-            adjNodes=temp;
+            edges=edgeList;
+
         } 
-        vi prims(){
-            priority_queue<pii,vector<pii>,greater<pii> > pq;
-            int src=0;
-            vector<int> key(V,INT_MAX);
-            vector<int> parent(V,-1);
-            vector<bool> inMST(V, false); 
-            pq.push(make_pair(0, src)); 
-            key[src] = 0; 
-             while (!pq.empty()) 
-            {  
-                int u = pq.top().second; 
-                pq.pop(); 
-                inMST[u] = true; 
-                vector<pii> li=adjNodes[u];
-                for(int i=0;i<li.size();++i){
-                    int v=li[i].first;
-                    int w=li[i].second;
-                    if(!inMST[v] && key[v]>w){
-                        key[v]=w;
-                        parent[v]=u;
-                        pq.push(make_pair(key[v],v));
-                        
-                    }
-                }
-            }
-            return parent;
-            
-        }
+       vi bellmanFord(){
+           vi dist(V,INT_MAX);
+           dist[0]=0;
+           for(int i=0;i<V-1;++i){
+               for(int j=0;j<edges.size();++j){
+                   int u=edges[j][0];
+                   int v=edges[j][1];
+                   int w=edges[j][2];
+                   if(dist[u]!=INT_MAX && dist[v]>dist[u]+w){
+                       dist[v]=dist[u]+w;
+                   }
+               }
+           }
+
+           //check if we have negative edge cycle
+           for(int j=0;j<edges.size();++j){
+               int u=edges[j][0];
+                   int v=edges[j][1];
+                   int w=edges[j][2];
+                   if(dist[u]!=INT_MAX && dist[v]>dist[u]+w){
+                       //negative edge cycle exists
+                       vector<int> empty;
+                       return empty;
+                   }
+           }
+           return dist;
+       }
+       
 
 };
-
 
 void printVector(vector<int> &index){
     int n=index.size();
@@ -98,9 +89,6 @@ void printVector(vector<int> &index){
     cout<<endl;
 
 }
-
-/*Prims gives us the minimum spanning tree
-not the shortest distance from source*/
 
 int main(){
     ios_base::sync_with_stdio(false); //makes cin cout faster
@@ -114,12 +102,12 @@ int main(){
         vi temp(3);
         cin>>temp[0]; //u
         cin>>temp[1];//v
-        cin>>temp[2];
+        cin>>temp[2];//weight
         edges.push_back(temp);
     }
     Graph g(v,edges);
-    vector<int> distance=g.prims();
-    printVector(distance);
+    vi dist=g.bellmanFord();
+    printVector(dist);
     return 0;
 
 }
